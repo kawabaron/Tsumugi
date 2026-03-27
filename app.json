@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Tsumugi",
+    "slug": "tsumugi",
+    "scheme": "tsumugi",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tsumugi.app"
+    },
+    "android": {
+      "package": "com.tsumugi.app"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
