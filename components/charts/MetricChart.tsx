@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
 
 import { palette, radii, spacing } from "@/constants/theme";
 
@@ -9,13 +10,20 @@ type MetricChartProps = {
   values: { label: string; value: number }[];
 };
 
-export const MetricChart = ({
-  title,
-  unit,
-  color,
-  values,
-}: MetricChartProps) => {
+export const MetricChart = ({ title, unit, color, values }: MetricChartProps) => {
+  const [plotWidth, setPlotWidth] = useState(0);
+  const chartHeight = 160;
   const maxValue = Math.max(...values.map((value) => value.value), 1);
+
+  const points = values.map((entry, index) => ({
+    ...entry,
+    x: values.length > 1 ? (plotWidth / (values.length - 1)) * index : plotWidth / 2,
+    y: chartHeight - (entry.value / maxValue) * (chartHeight - 24) - 12,
+  }));
+
+  const handlePlotLayout = (event: LayoutChangeEvent) => {
+    setPlotWidth(event.nativeEvent.layout.width);
+  };
 
   return (
     <View style={styles.card}>
@@ -23,24 +31,69 @@ export const MetricChart = ({
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.unit}>{unit}</Text>
       </View>
-      <View style={styles.bars}>
-        {values.map((entry) => (
-          <View key={entry.label} style={styles.barColumn}>
-            <View style={styles.barTrack}>
-              <View
-                style={[
-                  styles.barValue,
-                  {
-                    backgroundColor: color,
-                    height: `${Math.max((entry.value / maxValue) * 100, entry.value > 0 ? 12 : 4)}%`,
-                  },
-                ]}
-              />
+
+      <View style={styles.chartWrap}>
+        <View onLayout={handlePlotLayout} style={[styles.plotArea, { height: chartHeight }]}>
+          <View style={styles.gridLine} />
+          <View style={[styles.gridLine, styles.gridLineMiddle]} />
+          <View style={[styles.gridLine, styles.gridLineBottom]} />
+
+          {plotWidth > 0
+            ? points.map((point, index) => {
+                const next = points[index + 1];
+                if (!next) {
+                  return null;
+                }
+
+                const dx = next.x - point.x;
+                const dy = next.y - point.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = `${Math.atan2(dy, dx)}rad`;
+
+                return (
+                  <View
+                    key={`${point.label}-${next.label}`}
+                    style={[
+                      styles.segment,
+                      {
+                        left: (point.x + next.x) / 2 - length / 2,
+                        top: (point.y + next.y) / 2 - 1.5,
+                        width: length,
+                        backgroundColor: color,
+                        transform: [{ rotate: angle }],
+                      },
+                    ]}
+                  />
+                );
+              })
+            : null}
+
+          {plotWidth > 0
+            ? points.map((point) => (
+                <View
+                  key={point.label}
+                  style={[
+                    styles.pointWrap,
+                    {
+                      left: point.x - 28,
+                      top: point.y - 30,
+                    },
+                  ]}
+                >
+                  <Text style={styles.pointValue}>{point.value}</Text>
+                  <View style={[styles.point, { borderColor: color }]} />
+                </View>
+              ))
+            : null}
+        </View>
+
+        <View style={styles.labelsRow}>
+          {values.map((entry) => (
+            <View key={entry.label} style={styles.labelCell}>
+              <Text style={styles.label}>{entry.label}</Text>
             </View>
-            <Text style={styles.barNumber}>{entry.value}</Text>
-            <Text style={styles.barLabel}>{entry.label}</Text>
-          </View>
-        ))}
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -69,37 +122,59 @@ const styles = StyleSheet.create({
     color: palette.textSoft,
     fontSize: 12,
   },
-  bars: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
+  chartWrap: {
     gap: spacing.sm,
-    minHeight: 170,
   },
-  barColumn: {
-    flex: 1,
+  plotArea: {
+    position: "relative",
+  },
+  gridLine: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    borderTopWidth: 1,
+    borderTopColor: palette.line,
+  },
+  gridLineMiddle: {
+    top: "50%",
+  },
+  gridLineBottom: {
+    top: "100%",
+  },
+  segment: {
+    position: "absolute",
+    height: 3,
+    borderRadius: radii.pill,
+  },
+  pointWrap: {
+    position: "absolute",
+    width: 56,
     alignItems: "center",
     gap: 6,
   },
-  barTrack: {
-    width: "100%",
-    flex: 1,
-    minHeight: 110,
-    justifyContent: "flex-end",
-    borderRadius: radii.md,
-    backgroundColor: palette.surfaceMuted,
-    padding: 4,
-  },
-  barValue: {
-    width: "100%",
-    borderRadius: radii.sm,
-  },
-  barNumber: {
+  pointValue: {
     color: palette.text,
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "700",
   },
-  barLabel: {
+  point: {
+    width: 12,
+    height: 12,
+    borderRadius: radii.pill,
+    backgroundColor: palette.surface,
+    borderWidth: 3,
+  },
+  labelsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+  },
+  labelCell: {
+    flex: 1,
+    alignItems: "center",
+  },
+  label: {
     color: palette.textSoft,
     fontSize: 11,
   },

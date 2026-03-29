@@ -11,6 +11,8 @@ export const formatHeaderDate = (date: string) => dayjs(date).format("YYYYå¹´Mæœ
 
 export const formatTime = (dateTime: string) => dayjs(dateTime).format("HH:mm");
 
+export const currentTimeKey = () => dayjs().format("HH:mm");
+
 export const shiftDay = (date: string, amount: number) =>
   dayjs(date).add(amount, "day").format("YYYY-MM-DD");
 

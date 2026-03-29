@@ -53,6 +53,7 @@ const createDefaultSettings = (userId: string): UserSettings => ({
   userId,
   themeColor: themeOptions[0].value,
   timelineDensity: "standard",
+  timeMinuteInterval: 5,
   visibleRecordTypes: defaultVisibleTypes,
   quickActionOrder: defaultQuickActionOrder,
   enableOneTapRecord: true,
@@ -98,10 +99,13 @@ const seedTimelineEvents = (
         id: createId("record"),
         familyGroupId,
         childId,
-        type,
-        timestamp,
-        amountMl: extra?.amountMl,
-        note: extra?.note,
+      type,
+      timestamp,
+      amountMl: extra?.amountMl,
+      poopAmount: extra?.poopAmount,
+      poopHardness: extra?.poopHardness,
+      poopColor: extra?.poopColor,
+      note: extra?.note,
         createdByUserId: extra?.createdByUserId ?? authorA,
         createdAt: timestamp,
         updatedAt: timestamp,
@@ -148,6 +152,10 @@ class MockRepository {
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
       if (raw) {
         this.state = JSON.parse(raw) as PersistedState;
+        this.state.userSettings = this.state.userSettings.map((settings) => ({
+          ...settings,
+          timeMinuteInterval: settings.timeMinuteInterval === 1 ? 1 : 5,
+        }));
       } else {
         this.state = {
           users: [],
@@ -377,11 +385,11 @@ class MockRepository {
     ;
 
     return {
-      currentUser,
-      familyGroup,
-      childProfile,
-      members,
-      settings,
+      currentUser: currentUser ? { ...currentUser } : null,
+      familyGroup: familyGroup ? { ...familyGroup } : null,
+      childProfile: childProfile ? { ...childProfile } : null,
+      members: members.map((member) => ({ ...member })),
+      settings: settings ? { ...settings } : null,
     };
   }
 
@@ -395,7 +403,8 @@ class MockRepository {
           event.childId === childId &&
           dayjs(event.timestamp).format("YYYY-MM-DD") === date
       )
-      .sort((a, b) => dayjs(a.timestamp).valueOf() - dayjs(b.timestamp).valueOf());
+      .sort((a, b) => dayjs(a.timestamp).valueOf() - dayjs(b.timestamp).valueOf())
+      .map((event) => ({ ...event }));
   }
 
   async getAnalytics(familyGroupId: string, childId: string, anchorDate: string, days = 7) {
@@ -418,6 +427,9 @@ class MockRepository {
       type: input.type,
       timestamp: input.timestamp,
       amountMl: input.amountMl,
+      poopAmount: input.poopAmount,
+      poopHardness: input.poopHardness,
+      poopColor: input.poopColor,
       note: input.note,
       createdByUserId: input.createdByUserId,
       createdAt: new Date().toISOString(),
@@ -437,6 +449,9 @@ class MockRepository {
     }
     record.timestamp = input.timestamp;
     record.amountMl = input.amountMl;
+    record.poopAmount = input.poopAmount;
+    record.poopHardness = input.poopHardness;
+    record.poopColor = input.poopColor;
     record.note = input.note;
     record.updatedAt = new Date().toISOString();
     await this.persist();

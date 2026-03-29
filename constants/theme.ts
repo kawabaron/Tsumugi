@@ -1,4 +1,4 @@
-import { RecordEventType } from "@/types/domain";
+import { PoopAmount, PoopColor, PoopHardness, RecordEventType } from "@/types/domain";
 
 export const palette = {
   background: "#F6F4EF",
@@ -58,14 +58,14 @@ export const eventMeta: Record<
     icon: "seed-outline",
   },
   sleep_start: {
-    label: "ねんね開始",
-    shortLabel: "ねんね開始",
+    label: "寝る",
+    shortLabel: "寝る",
     tint: "#8574B6",
     icon: "weather-night",
   },
   sleep_end: {
-    label: "ねんね終了",
-    shortLabel: "ねんね終了",
+    label: "起きる",
+    shortLabel: "起きる",
     tint: "#D59C54",
     icon: "white-balance-sunny",
   },
@@ -93,4 +93,84 @@ export const defaultQuickActionOrder: RecordEventType[] = [
   "sleep_start",
   "sleep_end",
   "memo",
+];
+
+export const poopAmountOptions: { value: PoopAmount; label: string }[] = [
+  { value: "tiny", label: "ちょこっと" },
+  { value: "small", label: "少なめ" },
+  { value: "normal", label: "ふつう" },
+  { value: "large", label: "多め" },
+];
+
+export const poopHardnessOptions: { value: PoopHardness; label: string }[] = [
+  { value: "diarrhea", label: "下痢" },
+  { value: "soft", label: "やわらかめ" },
+  { value: "normal", label: "ふつう" },
+  { value: "firm", label: "かため" },
+];
+
+export const poopColorOptions: {
+  value: PoopColor;
+  label: string;
+  color: string;
+  backgroundColor: string;
+  borderColor: string;
+  textColor: string;
+}[] = [
+  {
+    value: "white",
+    label: "白",
+    color: "#F2EEE5",
+    backgroundColor: "#F8F6F0",
+    borderColor: "#D8D2C8",
+    textColor: "#6D665C",
+  },
+  {
+    value: "yellow",
+    label: "黄",
+    color: "#E5C749",
+    backgroundColor: "#FBF4CF",
+    borderColor: "#E4D58A",
+    textColor: "#8A6B12",
+  },
+  {
+    value: "orange",
+    label: "橙",
+    color: "#DE9B45",
+    backgroundColor: "#FCE8CE",
+    borderColor: "#E6BD86",
+    textColor: "#925615",
+  },
+  {
+    value: "brown",
+    label: "茶",
+    color: "#8D6340",
+    backgroundColor: "#EFE1D6",
+    borderColor: "#C6A58C",
+    textColor: "#6F482A",
+  },
+  {
+    value: "green",
+    label: "緑",
+    color: "#6F8B4F",
+    backgroundColor: "#E4EFD9",
+    borderColor: "#AFC58E",
+    textColor: "#4C6731",
+  },
+  {
+    value: "red",
+    label: "赤",
+    color: "#C86B68",
+    backgroundColor: "#F8DEDD",
+    borderColor: "#E4A2A0",
+    textColor: "#9B3D3B",
+  },
+  {
+    value: "black",
+    label: "黒",
+    color: "#3B3732",
+    backgroundColor: "#E3DFDB",
+    borderColor: "#A59D95",
+    textColor: "#2E2924",
+  },
 ];

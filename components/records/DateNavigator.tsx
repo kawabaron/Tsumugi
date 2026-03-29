@@ -1,14 +1,15 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import dayjs from "dayjs";
 
 import { palette, radii, spacing } from "@/constants/theme";
-import { formatHeaderDate, todayKey } from "@/lib/date";
+import { todayKey } from "@/lib/date";
 
 type DateNavigatorProps = {
   date: string;
   onPrevious: () => void;
   onNext: () => void;
-  onToday: () => void;
+  onOpenCalendar: () => void;
   accentColor: string;
 };
 
@@ -16,26 +17,37 @@ export const DateNavigator = ({
   date,
   onPrevious,
   onNext,
-  onToday,
+  onOpenCalendar,
   accentColor,
 }: DateNavigatorProps) => {
   const isToday = date === todayKey();
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Text style={styles.label}>Daily timeline</Text>
-        <Text style={styles.date}>{formatHeaderDate(date)}</Text>
-      </View>
+    <View style={styles.shell}>
+      <Pressable onPress={onOpenCalendar} style={styles.dateButton}>
+        <MaterialCommunityIcons
+          color={isToday ? accentColor : palette.textMuted}
+          name="calendar-month-outline"
+          size={15}
+        />
+        <Text style={styles.dateText}>{dayjs(date).format("YYYY年M月D日")}</Text>
+      </Pressable>
+
       <View style={styles.actions}>
-        <Pressable onPress={onPrevious} style={styles.iconButton}>
-          <MaterialCommunityIcons color={palette.text} name="chevron-left" size={22} />
+        <Pressable accessibilityRole="button" onPress={onPrevious} style={styles.iconButton}>
+          <MaterialCommunityIcons color={palette.text} name="chevron-left" size={18} />
         </Pressable>
-        <Pressable onPress={onToday} style={[styles.todayButton, { borderColor: accentColor }]}>
-          <Text style={[styles.todayText, isToday && { color: accentColor }]}>今日</Text>
-        </Pressable>
-        <Pressable onPress={onNext} style={styles.iconButton}>
-          <MaterialCommunityIcons color={palette.text} name="chevron-right" size={22} />
+        <Pressable
+          accessibilityRole="button"
+          disabled={isToday}
+          onPress={onNext}
+          style={[styles.iconButton, isToday && styles.iconButtonDisabled]}
+        >
+          <MaterialCommunityIcons
+            color={isToday ? palette.textSoft : palette.text}
+            name="chevron-right"
+            size={18}
+          />
         </Pressable>
       </View>
     </View>
@@ -43,49 +55,45 @@ export const DateNavigator = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  shell: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    gap: spacing.md,
+    justifyContent: "space-between",
+    gap: spacing.sm,
   },
-  label: {
-    color: palette.textSoft,
-    fontSize: 12,
-    letterSpacing: 1.5,
-    textTransform: "uppercase",
+  dateButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    minHeight: 38,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: radii.pill,
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: "rgba(139, 121, 92, 0.12)",
   },
-  date: {
+  dateText: {
     color: palette.text,
-    fontSize: 26,
+    fontSize: 13,
     fontWeight: "700",
-    marginTop: 6,
   },
   actions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
+    gap: 8,
   },
   iconButton: {
-    width: 40,
-    height: 40,
+    width: 34,
+    height: 34,
     borderRadius: radii.pill,
     backgroundColor: palette.surface,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: palette.line,
+    borderColor: "rgba(139, 121, 92, 0.12)",
   },
-  todayButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: radii.pill,
-    backgroundColor: palette.surface,
-    borderWidth: 1,
-  },
-  todayText: {
-    color: palette.textMuted,
-    fontSize: 13,
-    fontWeight: "600",
+  iconButtonDisabled: {
+    opacity: 0.45,
   },
 });

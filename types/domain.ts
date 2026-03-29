@@ -9,6 +9,10 @@ export type RecordEventType =
   | "memo";
 
 export type TimelineDensity = "comfortable" | "standard" | "compact";
+export type TimeMinuteInterval = 1 | 5;
+export type PoopAmount = "tiny" | "small" | "normal" | "large";
+export type PoopHardness = "diarrhea" | "soft" | "normal" | "firm";
+export type PoopColor = "white" | "yellow" | "orange" | "brown" | "green" | "red" | "black";
 
 export type User = {
   id: string;
@@ -53,6 +57,9 @@ export type RecordEvent = {
   type: RecordEventType;
   timestamp: string;
   amountMl?: number;
+  poopAmount?: PoopAmount;
+  poopHardness?: PoopHardness;
+  poopColor?: PoopColor;
   note?: string;
   createdByUserId: string;
   createdAt: string;
@@ -65,6 +72,7 @@ export type UserSettings = {
   userId: string;
   themeColor: string;
   timelineDensity: TimelineDensity;
+  timeMinuteInterval: TimeMinuteInterval;
   visibleRecordTypes: RecordEventType[];
   quickActionOrder: RecordEventType[];
   enableOneTapRecord: boolean;
@@ -147,6 +155,9 @@ export type CreateRecordInput = {
   type: RecordEventType;
   timestamp: string;
   amountMl?: number;
+  poopAmount?: PoopAmount;
+  poopHardness?: PoopHardness;
+  poopColor?: PoopColor;
   note?: string;
 };
 
@@ -154,6 +165,9 @@ export type UpdateRecordInput = {
   id: string;
   timestamp: string;
   amountMl?: number;
+  poopAmount?: PoopAmount;
+  poopHardness?: PoopHardness;
+  poopColor?: PoopColor;
   note?: string;
 };
 

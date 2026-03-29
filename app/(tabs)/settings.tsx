@@ -16,7 +16,7 @@ import { SettingSection } from "@/components/settings/SettingSection";
 import { defaultVisibleTypes, eventMeta, palette, radii, spacing, themeOptions } from "@/constants/theme";
 import { useAppContextQuery, useSessionActions, useSettingsActions } from "@/hooks/use-app-data";
 import { birthDateInput } from "@/lib/date";
-import { RecordEventType, TimelineDensity } from "@/types/domain";
+import { RecordEventType, TimelineDensity, TimeMinuteInterval } from "@/types/domain";
 
 export default function SettingsScreen() {
   const { data: context } = useAppContextQuery();
@@ -29,6 +29,7 @@ export default function SettingsScreen() {
 
   const settings = context?.settings;
   const accentColor = settings?.themeColor ?? palette.text;
+  const timeMinuteInterval = settings?.timeMinuteInterval ?? 5;
 
   const applySettings = async (input: Partial<NonNullable<typeof settings>>) => {
     if (!context?.currentUser) {
@@ -76,6 +77,15 @@ export default function SettingsScreen() {
         { label: "標準", value: "standard" },
         { label: "詰め気味", value: "compact" },
       ] as { label: string; value: TimelineDensity }[],
+    []
+  );
+
+  const minuteIntervalOptions = useMemo(
+    () =>
+      [
+        { label: "5分刻み", value: 5 },
+        { label: "1分刻み", value: 1 },
+      ] as { label: string; value: TimeMinuteInterval }[],
     []
   );
 
@@ -188,6 +198,29 @@ export default function SettingsScreen() {
       </SettingSection>
 
       <SettingSection title="入力カスタム" description="クイック操作の体験を調整">
+        <Text style={styles.subLabel}>時刻の選択刻み</Text>
+        <View style={styles.segment}>
+          {minuteIntervalOptions.map((option) => (
+            <Pressable
+              key={option.value}
+              onPress={() => applySettings({ timeMinuteInterval: option.value })}
+              style={[
+                styles.segmentButton,
+                timeMinuteInterval === option.value && styles.segmentButtonActive,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  timeMinuteInterval === option.value && styles.segmentTextActive,
+                ]}
+              >
+                {option.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
         <View style={styles.row}>
           <Text style={styles.rowLabel}>1 タップ記録</Text>
           <Switch

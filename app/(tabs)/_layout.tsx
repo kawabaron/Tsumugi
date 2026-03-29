@@ -28,7 +28,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="analytics"
         options={{
-          title: "グラフ",
+          title: "分析",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons color={color} name="chart-box-outline" size={size} />
           ),
